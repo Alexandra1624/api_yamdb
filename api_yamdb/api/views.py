@@ -13,7 +13,7 @@ from .serializers import (
     TitleReadSerializer,
     TitleWriteSerializer
 )
-from ..api_yamdb.models import Category, Genre, Title
+from api_yamdb.reviews.models import Category, Genre, Title
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from api_yamdb.api_yamdb.models import Category, Genre, Title
+from api_yamdb.reviews.models import Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
