@@ -13,7 +13,7 @@ from .serializers import (
     TitleReadSerializer,
     TitleWriteSerializer
 )
-from api_yamdb.reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -55,7 +55,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(Avg('reviews__score'))
+    # queryset = Title.objects.annotate(Avg('reviews__score'))
     # permission_classes = (...)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter

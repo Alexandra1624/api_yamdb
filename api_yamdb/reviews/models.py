@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from api_yamdb.api.validators import current_year_validator
+from .validators import current_year_validator
 
 
 class Category(models.Model):
