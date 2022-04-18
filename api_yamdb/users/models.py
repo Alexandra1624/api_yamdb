@@ -40,6 +40,10 @@ class User(AbstractUser):
 
     exclude: Tuple[str] = ('confirmation_code',)
 
+    class Meta:
+        verbose_name: str = 'Пользователь'
+        verbose_name_plural: str = 'Пользователи'
+
     def save(self, *args, **kwargs):
         if self.is_superuser:
             self.role = ADMIN
@@ -49,7 +53,3 @@ class User(AbstractUser):
             self.is_staff = False
 
         super(User, self).save(*args, **kwargs)
-
-    class Meta:
-        verbose_name: str = 'Пользователь'
-        verbose_name_plural: str = 'Пользователи'
