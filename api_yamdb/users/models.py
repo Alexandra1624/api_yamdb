@@ -1,13 +1,16 @@
+from typing import Tuple, List
+
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.db.models import CharField, EmailField, TextField
 
-ADMIN = 'admin'
-MODERATOR = 'moderator'
-USER = 'user'
-ME = 'me'
+ADMIN: str = 'admin'
+MODERATOR: str = 'moderator'
+USER: str = 'user'
+ME: str = 'me'
 
-role_choices = [
+role_choices: List[Tuple[str, str]] = [
     (USER, 'user'),
     (MODERATOR, 'moderator'),
     (ADMIN, 'admin'),
@@ -17,7 +20,7 @@ role_choices = [
 class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
 
-    username = models.CharField(
+    username: CharField = models.CharField(
         max_length=150,
         unique=True,
         blank=False,
@@ -27,15 +30,15 @@ class User(AbstractUser):
             'unique': 'Пользователь с таким именем уже существует'
         },
     )
-    email = models.EmailField(max_length=255, unique=True, blank=False)
-    role = models.CharField(choices=role_choices, default='user', max_length=9)
-    bio = models.TextField(max_length=500, blank=True, null=True)
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
+    email: EmailField = models.EmailField(max_length=255, unique=True, blank=False)
+    role: CharField = models.CharField(choices=role_choices, default='user', max_length=9)
+    bio: TextField = models.TextField(max_length=500, blank=True, null=True)
+    first_name: CharField = models.CharField(max_length=50, blank=True)
+    last_name: CharField = models.CharField(max_length=50, blank=True)
 
-    confirmation_code = models.TextField(null=True, blank=True)
+    confirmation_code: TextField = models.TextField(null=True, blank=True)
 
-    exclude = ('confirmation_code',)
+    exclude: Tuple[str] = ('confirmation_code',)
 
     def save(self, *args, **kwargs):
         if self.is_superuser:
@@ -46,3 +49,7 @@ class User(AbstractUser):
             self.is_staff = False
 
         super(User, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name: str = 'Пользователь'
+        verbose_name_plural: str = 'Пользователи'
