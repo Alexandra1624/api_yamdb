@@ -1,33 +1,23 @@
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django.utils.crypto import random
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
+from reviews.models import Category, Genre, Title, Review
 from users.emails import send_confirmation_code_via_email
 from users.models import User
-
-from .serializers import (
-    UserSerializer,
-    SignUpSerializer,
-    VerificationSerializer,
-    CheckMeSerializer
-)
-
+from .filters import TitleFilter
 from .permissions import (
     AdminOrReadOnly,
     AdminOrUserOrModeratorOrReadOnly
 )
-
-from django.db.models import Avg
-from django.shortcuts import get_object_or_404
-# from requests import Response
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
-
-from .filters import TitleFilter
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -36,7 +26,12 @@ from .serializers import (
     ReviewSerializer,
     CommentSerializer
 )
-from reviews.models import Category, Genre, Title, Review
+from .serializers import (
+    UserSerializer,
+    SignUpSerializer,
+    VerificationSerializer,
+    CheckMeSerializer
+)
 
 
 class SignUpAPIView(GenericAPIView):
@@ -45,15 +40,13 @@ class SignUpAPIView(GenericAPIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data, many=False)
-        confirmation_code = random.randint(1000, 9999)
-        if serializer.is_valid():
-            serializer.save(confirmation_code=confirmation_code)
-            send_confirmation_code_via_email(
-                serializer.validated_data['email']
-            )
-            return Response(serializer.validated_data,
-                            status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        send_confirmation_code_via_email(
+            serializer.validated_data['email']
+        )
+        return Response(serializer.validated_data,
+                        status=status.HTTP_200_OK)
 
 
 @action(detail=True, gmethods=['post'])
@@ -67,7 +60,8 @@ class VerifyAPIView(GenericAPIView):
         serializer = VerificationSerializer(data=data)
         if serializer.is_valid():
             return Response(
-                {'token': serializer.data['token']}, status=status.HTTP_200_OK
+                {'token': serializer.validated_data['token']},
+                status=status.HTTP_200_OK
             )
         elif serializer.errors.get('username') is not None:
             for error in serializer.errors.get('username'):

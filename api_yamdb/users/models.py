@@ -1,9 +1,8 @@
-from typing import Tuple, List
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import CharField, EmailField, TextField
+from typing import Tuple, List
 
 ADMIN: str = 'admin'
 MODERATOR: str = 'moderator'
@@ -36,7 +35,7 @@ class User(AbstractUser):
         max_length=255, unique=True, blank=False
     )
     role: CharField = models.CharField(
-        choices=role_choices, default='user', max_length=9
+        choices=role_choices, default=USER, max_length=9
     )
     bio: TextField = models.TextField(max_length=500, blank=True, null=True)
     first_name: CharField = models.CharField(max_length=50, blank=True)

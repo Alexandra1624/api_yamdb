@@ -42,7 +42,6 @@ router_category_genre_v1.register(
 router_category_genre_v1.register(r'genres', GenreViewSet, basename='genre')
 router_titles_v1.register(r'titles', TitleViewSet, basename='title')
 
-
 router = routers.DefaultRouter()
 
 router.register(r'users', UserViewSet)

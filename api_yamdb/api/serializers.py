@@ -1,17 +1,16 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User
 from api.validators import check_username
-from users.models import ADMIN, ME
-
-from rest_framework.validators import UniqueValidator
 from reviews.models import Category, Genre, Title, Comment, Review
+from users.models import ADMIN, ME
+from users.models import User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('email', 'username')
@@ -46,8 +45,14 @@ class VerificationSerializer(serializers.ModelSerializer):
         return str(access)
 
     def validate(self, data):
+        username = data.get('username')
+        name = get_object_or_404(
+            User,
+            username=data['username'],
+        ).username
         confirmation_code = data.get('confirmation_code')
-        conf_code = User.objects.get(
+        conf_code = get_object_or_404(
+            User,
             username=data['username']
         ).confirmation_code
         if confirmation_code is None:
@@ -58,11 +63,14 @@ class VerificationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Confirmation code is invalid'
             )
+        elif username is not name:
+            raise serializers.ValidationError(
+                'Username is invalid to log'
+            )
         return data
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta(object):
         model = User
         fields = ('username', 'email', 'username', 'first_name', 'last_name',
@@ -147,7 +155,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             title_id = self.context['view'].kwargs.get('title_id')
             if Review.objects.filter(
-                author_id=user.id, title_id=title_id
+                    author_id=user.id, title_id=title_id
             ).exists():
                 raise serializers.ValidationError('У вас уже есть отзыв!')
         return data
