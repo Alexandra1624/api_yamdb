@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -6,9 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 from api.validators import check_username
 from users.models import ADMIN, ME
-
-from rest_framework.validators import UniqueValidator
-from reviews.models import Category, Genre, Title
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -82,6 +80,11 @@ class CheckMeSerializer(serializers.ModelSerializer):
         if instance.role != ADMIN:
             data['role'] = instance.role
         return data
+=======
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
+from reviews.models import Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -130,3 +133,4 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
+>>>>>>> feature/categories
