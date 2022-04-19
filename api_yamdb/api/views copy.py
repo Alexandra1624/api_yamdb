@@ -16,11 +16,6 @@ from .serializers import (
     CheckMeSerializer
 )
 
-from .permissions import (
-    AdminOrReadOnly,
-    AdminOrUserOrModeratorOrReadOnly
-)
-
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 # from requests import Response
@@ -103,14 +98,14 @@ class UserViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AdminOrReadOnly]
+    # permission_classes = (...)
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
 
     def destroy(self, request, *args, **kwargs):
         category = get_object_or_404(Category, slug=kwargs['pk'])
-        if request.user.is_staff or request.user.is_superuser:
+        if request.user.is_admin or request.user.is_superuser:
             self.perform_destroy(category)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_403_FORBIDDEN)
@@ -122,14 +117,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AdminOrReadOnly]
+    # permission_classes = (...)
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
 
     def destroy(self, request, *args, **kwargs):
         genre = get_object_or_404(Genre, slug=kwargs['pk'])
-        if request.user.is_staff or request.user.is_superuser:
+        if request.user.is_admin or request.user.is_superuser:
             self.perform_destroy(genre)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_403_FORBIDDEN)
@@ -139,8 +134,8 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(Avg('reviews__score'))  # проверить
-    permission_classes = [AdminOrReadOnly]
+    # queryset = Title.objects.annotate(Avg('reviews__score'))
+    # permission_classes = (...)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
@@ -152,7 +147,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [AdminOrUserOrModeratorOrReadOnly]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -167,7 +161,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [AdminOrUserOrModeratorOrReadOnly]
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
