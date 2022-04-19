@@ -24,14 +24,20 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         blank=False,
-        help_text='Обязательное поле. До 150 символов. Буквы, цифры разрешены.',
+        help_text=(
+            'Обязательное поле. До 150 символов. Буквы, цифры разрешены.'
+        ),
         validators=[username_validator],
         error_messages={
             'unique': 'Пользователь с таким именем уже существует'
         },
     )
-    email: EmailField = models.EmailField(max_length=255, unique=True, blank=False)
-    role: CharField = models.CharField(choices=role_choices, default='user', max_length=9)
+    email: EmailField = models.EmailField(
+        max_length=255, unique=True, blank=False
+    )
+    role: CharField = models.CharField(
+        choices=role_choices, default='user', max_length=9
+    )
     bio: TextField = models.TextField(max_length=500, blank=True, null=True)
     first_name: CharField = models.CharField(max_length=50, blank=True)
     last_name: CharField = models.CharField(max_length=50, blank=True)

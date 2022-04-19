@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -48,7 +47,9 @@ class VerificationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         confirmation_code = data.get('confirmation_code')
-        conf_code = User.objects.get(username=data['username']).confirmation_code
+        conf_code = User.objects.get(
+            username=data['username']
+        ).confirmation_code
         if confirmation_code is None:
             raise serializers.ValidationError(
                 'A confirmation_code is required to log in.'
