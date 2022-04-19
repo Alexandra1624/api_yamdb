@@ -8,7 +8,7 @@ from api.validators import check_username
 from users.models import ADMIN, ME
 
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Comment, Review
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -130,3 +130,30 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(slug_field='username',
+                                          read_only=True)
+    title = serializers.SlugRelatedField(slug_field='pk', read_only=True)
+
+    class Meta:
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        model = Review
+
+    def validate(self, data):
+        author = self.context['request'].user
+        title_id = self.context.get('title_id')
+        if (Review.objects.filter(author=author, title=title_id).exists()
+                and self.context['request'].method != 'PATCH'):
+            raise serializers.ValidationError('У вас уже есть отзыв!')
+        return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(slug_field='username',
+                                          read_only=True)
+
+    class Meta:
+        fields = ('id', 'text', 'author', 'pub_date')
+        model = Comment
