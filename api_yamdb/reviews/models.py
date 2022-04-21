@@ -41,7 +41,6 @@ class Title(models.Model):
             current_year_validator
         ),
     )
-    rating = models.IntegerField('Рейтинг', null=True)
     description = models.CharField(
         'Описание произведения', max_length=1000, null=True,
     )
@@ -83,9 +82,10 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
+            MinValueValidator(1, 'Минимум 1',),
+            MaxValueValidator(10, 'Максимум 10',)
         ],
+
         verbose_name='Оценка'
     )
     pub_date = models.DateTimeField(

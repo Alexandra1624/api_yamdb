@@ -1,6 +1,5 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django.utils.crypto import random
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -24,9 +23,7 @@ from .serializers import (
     TitleReadSerializer,
     TitleWriteSerializer,
     ReviewSerializer,
-    CommentSerializer
-)
-from .serializers import (
+    CommentSerializer,
     UserSerializer,
     SignUpSerializer,
     VerificationSerializer,
@@ -133,7 +130,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(Avg('reviews__score'))  # проверить
+    queryset = Title.objects.annotate(Avg('reviews__score'))
     permission_classes = [AdminOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter

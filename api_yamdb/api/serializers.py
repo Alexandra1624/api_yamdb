@@ -1,3 +1,4 @@
+import datetime as dt
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -100,7 +101,7 @@ class CategorySerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('name', 'slug',)
+        exclude = ('id',)
         model = Category
 
 
@@ -111,7 +112,7 @@ class GenreSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('name', 'slug',)
+        exclude = ('id',)
         model = Genre
 
 
@@ -139,6 +140,13 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
+
+    def validate_year(self, value_year):
+        """Год выпуска произведения не может быть больше текущего."""
+        if value_year > dt.datetime.now().year:
+            raise serializers.ValidationError(
+                'Год выпуска больше текущего!')
+        return value_year
 
 
 class ReviewSerializer(serializers.ModelSerializer):
