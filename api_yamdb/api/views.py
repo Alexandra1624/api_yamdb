@@ -1,6 +1,5 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django.utils.crypto import random
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -58,16 +57,11 @@ class VerifyAPIView(GenericAPIView):
     def post(request):
         data = request.data
         serializer = VerificationSerializer(data=data)
-        if serializer.is_valid():
-            return Response(
-                {'token': serializer.validated_data['token']},
-                status=status.HTTP_200_OK
-            )
-        elif serializer.errors.get('username') is not None:
-            for error in serializer.errors.get('username'):
-                if error.code == 'invalid':
-                    return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            {'token': serializer.validated_data['token']},
+            status=status.HTTP_200_OK
+        )
 
 
 class UserViewSet(viewsets.ModelViewSet):
