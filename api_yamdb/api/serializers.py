@@ -1,3 +1,4 @@
+from attr import attrs
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -140,6 +141,14 @@ class ReviewSerializer(serializers.ModelSerializer):
             ).exists():
                 raise serializers.ValidationError('У вас уже есть отзыв!')
         return data
+
+    @staticmethod
+    def validate_rating(value):
+        if value < 1 or value > 10:
+            raise serializers.ValidationError(
+                'Оценка должна быть от 1 до 10'
+            )
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):
