@@ -99,16 +99,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
 
-    @action(
-        detail=False, methods=['delete'],
-        url_path=r'(?P<slug>\w+)',
-        lookup_field='slug', url_name='category_slug'
-    )
-    def get_category(self, request, slug):
-        category = self.get_object()
-        serializer = CategorySerializer(category)
+    def destroy(self, request, *args, **kwargs):
+        category = get_object_or_404(Category, slug=kwargs['pk'])
+        if request.user.is_staff or request.user.is_superuser:
+            self.perform_destroy(category)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, category):
         category.delete()
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
@@ -119,16 +118,15 @@ class GenreViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
 
-    @action(
-        detail=False, methods=['delete'],
-        url_path=r'(?P<slug>\w+)',
-        lookup_field='slug', url_name='category_slug'
-    )
-    def get_genre(self, request, slug):
-        category = self.get_object()
-        serializer = CategorySerializer(category)
-        category.delete()
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+    def destroy(self, request, *args, **kwargs):
+        genre = get_object_or_404(Genre, slug=kwargs['pk'])
+        if request.user.is_staff or request.user.is_superuser:
+            self.perform_destroy(genre)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, genre):
+        genre.delete()
 
 
 class TitleViewSet(viewsets.ModelViewSet):

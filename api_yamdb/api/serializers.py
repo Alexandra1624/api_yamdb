@@ -154,10 +154,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                                           read_only=True)
     title = serializers.SlugRelatedField(slug_field='id', read_only=True)
 
-    class Meta:
-        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
-        model = Review
-
     def validate(self, data):
         if self.context['request'].method == 'POST':
             user = self.context['request'].user
@@ -167,6 +163,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             ).exists():
                 raise serializers.ValidationError('У вас уже есть отзыв!')
         return data
+
+    class Meta:
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        model = Review
 
 
 class CommentSerializer(serializers.ModelSerializer):
