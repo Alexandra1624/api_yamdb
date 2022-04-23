@@ -1,10 +1,10 @@
-import datetime
+from django.utils import timezone
 
 from django.core.validators import MaxValueValidator
 
 
 def current_year():
-    current_year = datetime.date.today().year
+    current_year = timezone.now().year
     return current_year
 
 
