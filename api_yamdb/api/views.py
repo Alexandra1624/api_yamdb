@@ -13,6 +13,7 @@ from reviews.models import Category, Genre, Title, Review
 from users.emails import send_confirmation_code_via_email
 from users.models import User
 from .filters import TitleFilter
+from .mixins import CreateListDestroyViewSet
 from .permissions import (
     AdminOrReadOnly,
     AdminOrUserOrModeratorOrReadOnly
@@ -86,44 +87,24 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [AdminOrReadOnly]
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
-
-    @action(
-        detail=False, methods=['delete'],
-        url_path=r'(?P<slug>\w+)',
-        lookup_field='slug', url_name='category_slug'
-    )
-    def get_category(self, request, slug):
-        category = self.get_object()
-        serializer = CategorySerializer(category)
-        category.delete()
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+    lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = [AdminOrReadOnly]
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('=name',)
-
-    @action(
-        detail=False, methods=['delete'],
-        url_path=r'(?P<slug>\w+)',
-        lookup_field='slug', url_name='category_slug'
-    )
-    def get_genre(self, request, slug):
-        category = self.get_object()
-        serializer = CategorySerializer(category)
-        category.delete()
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
