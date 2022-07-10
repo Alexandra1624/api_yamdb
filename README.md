@@ -34,7 +34,7 @@
 - Django Rest Framework 3.12.4
 
 ## Установка
-**1. Клонируйте репозиторий:**
+1. **Клонируйте репозиторий:**
 ```sh
 git clone https://github.com/Alexandra1624/api_yamdb
 ```
